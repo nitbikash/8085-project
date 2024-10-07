@@ -1,0 +1,29 @@
+ORG 0000H         ; Origin
+
+START:            ; Beginning of the program
+
+    MVI A, 80H    ; Initialize 8255 in BSR mode (control word: 10000000)
+    OUT 00H       ; Send control word to control register
+    JMP MAIN      ; Jump to main loop
+
+MAIN:
+    MVI A, 01H    ; Set bit 0 of Port C (D0 = 1, bit 0 set)
+    OUT 00H       ; Output the control word for BSR (set)
+    CALL DELAY    ; Call delay subroutine
+    
+    MVI A, 00H    ; Reset bit 0 of Port C (D0 = 0, bit 0 reset)
+    OUT 00H       ; Output the control word for BSR (reset)
+    CALL DELAY    ; Call delay subroutine
+    
+    JMP MAIN      ; Repeat the process to generate square wave
+
+DELAY:
+    LXI D, FFFFH  ; Load a large delay count in DE register pair
+DELAY_LOOP:
+    DCX D         ; Decrement the counter
+    MOV A, D      ; Check if the counter reaches zero
+    ORA E
+    JNZ DELAY_LOOP; If not zero, keep looping
+    RET           ; Return to main program
+
+END
